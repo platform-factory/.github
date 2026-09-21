@@ -15,10 +15,12 @@ thecloudgeek LLC). Cite it by DOI:
 
 > **Where the build is (2026-09-21):** M1 *Spine* closed 2026-08-28 and M2
 > *Paved road* closed 2026-09-17, claims graded with evidence in the build
-> log. M3 *Approval boundary* is next. Of 25 pre-registered claims, eight
-> carry a grade — five HELD, three ADJUSTED (design changed; superseding ADR
-> linked), none WRONG. The rest are untested because their milestone hasn't
-> started. Nothing here is abandoned; some of it is not yet started, on
+> log. M3 *Approval boundary* is next. Of 25 registered claims — 22
+> pre-registered on 2026-07-31, three added since, each dated — eight carry a
+> grade: five HELD (two of them scoped to the surface built so far), three
+> ADJUSTED (design changed; superseding ADR linked), none WRONG. The other
+> seventeen are untested, including one M2 stretch claim (C-08) that was not
+> attempted. Nothing here is abandoned; some of it is not yet started, on
 > purpose.
 
 ## Start here
@@ -51,7 +53,9 @@ thecloudgeek LLC). Cite it by DOI:
 
 1. **Git is the source of truth for everything; Kubernetes is the control
    plane.** Terraform's only job is to bootstrap what the control plane can't
-   create yet — then it stops.
+   create yet. (The build found it recurs at one declared boundary — new
+   platform capabilities need identity and reachability from layer 0; that is
+   C-01, graded ADJUSTED, ADR-0016 §7.)
 2. **The repo boundary is the approval boundary.** Everything a team ships
    lives in the team's repo by default; something moves to a central repo only
    when its *approver* is someone other than the team shipping it.
@@ -59,7 +63,8 @@ thecloudgeek LLC). Cite it by DOI:
    databases, buckets, identities. Compositions materialize the cloud
    resources; admission policy, not human review, enforces the guardrails.
 4. **The edge is config, not tickets.** All routes and DNS live in one repo
-   where folder structure routes the review: security approves `external/`.
+   where folder structure routes the review — security approves `external/` —
+   and a schema field drives what gets materialized.
 5. **Knowledge is treated exactly like code** — born via PR, owned via
    CODEOWNERS, flagged stale by CI, regression-tested by a question bank.
 
@@ -77,10 +82,10 @@ to onboard.
 | Repo | Role | Approver | Milestone | Status (2026-09-21) |
 |---|---|---|---|---|
 | [`platform-factory-concept`](https://github.com/platform-factory/platform-factory-concept) | Design seed: pattern docs, 16 ADRs, claims register, graded build logs, research | — | all | **Current through the M2 close.** Moved into the org from `thecloudgeek/platform-factory` on 2026-09-19 with its dated history. |
-| [`platform-bootstrap`](https://github.com/platform-factory/platform-bootstrap) | Terraform layer 0: project, VPC, GKE, workload identity, Argo CD — "Terraform's last job" | platform | **M1** | **Built and live.** Layers 0–1 running since 2026-08-06; layers 2–3 rebuilt between sessions by `cycle.sh`, five cycles so far. Timings in `scripts/cycle-results.tsv`. |
+| [`platform-bootstrap`](https://github.com/platform-factory/platform-bootstrap) | Terraform layer 0: project, VPC, GKE, workload identity, Argo CD — "Terraform's last job" | platform | **M1** | **Built and live.** Layers 0–1 running since 2026-08-06; layers 2–3 rebuilt between sessions by `cycle.sh`, six cycles so far (five measured rebuilds and a closing teardown). Timings in `scripts/cycle-results.tsv`. |
 | [`platform-config`](https://github.com/platform-factory/platform-config) | Argo CD root (app-of-apps): the shared platform layer | platform | **M1–M2** → M3 | **Built:** Crossplane + GCP provider family, Kyverno, the `System` and database XRDs/Compositions, images through Artifact Registry. ESO, external-dns, Gateway arrive in M3. |
 | [`systems`](https://github.com/platform-factory/systems) | One YAML per tenant — the `System` XR | platform | **M2** | **Built.** Two tenants live (`svc-hello`, `svc-ledger`); merging the file *is* onboarding (C-05 HELD). |
-| [`svc-hello`](https://github.com/platform-factory/svc-hello) | Canonical service: Go app + `k8s/` (Deployment + database claim) | the team | **M2** | **Built.** Three routes, one table, Cloud SQL via IAM identity — no password anywhere (ADR-0013). |
+| [`svc-hello`](https://github.com/platform-factory/svc-hello) | Canonical service: Go app + `k8s/` (Deployment + database claim) | the team | **M2** | **Built.** Three routes, one table, Cloud SQL via IAM identity — the application holds no password (ADR-0013). One manual `sql.User` step per database remains while a provider fix is pending (C-07 ADJUSTED, ADR-0016 §4). |
 | [`svc-ledger`](https://github.com/platform-factory/svc-ledger) | Second tenant, a placeholder owned by a different team | the team | **M2** | **Built** — exists so C-05/C-06 had a second team to test against. |
 | [`template-service`](https://github.com/platform-factory/template-service) | Create-repo-from-template golden path | platform | M2 → later | Scaffold. M2 did not build it; recorded as such. |
 | [`edge-config`](https://github.com/platform-factory/edge-config) | All routes, DNS, WAF | security approves `external/` | M3 | Scaffold — but CODEOWNERS already routes `/external/` to `@platform-factory/security`. The approval boundary exists in file form from commit one. |
@@ -90,9 +95,9 @@ to onboard.
 
 | # | Name | Builds | Proves | Claims | State |
 |---|---|---|---|---|---|
-| M1 | Spine | Org repos, `platform-bootstrap`, GKE, Argo CD app-of-apps from `platform-config` | Terraform's-last-job + GitOps control plane; rebuild is cheap | C-01..C-04, C-23 | **Closed 2026-08-28.** C-02, C-04, C-23 HELD; C-01, C-03 deferred to M2 (their tests couldn't run yet — recorded as a register scheduling error, not papered over). |
+| M1 | Spine | Org repos, `platform-bootstrap`, GKE, Argo CD app-of-apps from `platform-config` | Terraform's-last-job + GitOps control plane; rebuild is cheap | C-01..C-04, C-23 | **Closed 2026-08-28.** C-02, C-23 HELD; C-04 HELD for the M1 surface, at the cost of five sync-wave workarounds; C-01, C-03 deferred to M2 (their tests couldn't run yet — recorded as a register scheduling error, not papered over). |
 | M2 | Paved road | `System` XR, `svc-hello` + database claim, Compositions + Kyverno guardrails, second tenant | Declare intent in your own repo → infrastructure materializes; policy replaces review | C-01, C-03, C-05..C-08 | **Closed 2026-09-17.** C-05 HELD; C-03 HELD for the kinds composed, one gap recorded; C-01, C-06, C-07 ADJUSTED ([ADR-0016](https://github.com/platform-factory/platform-factory-concept/blob/main/docs/adr/0016-what-the-m2-build-changed.md)); C-08 (stretch) not attempted, deferred to M3. Two claims added, dated (C-24, C-25). |
-| M3 | Approval boundary | `edge-config` folders + field + CI, CODEOWNERS, Kyverno reality gates, metadata spine, DNS/edge, ESO, external-dns, Gateway | Repo boundaries can carry the approval model | C-09..C-14, C-24 | Next |
+| M3 | Approval boundary | `edge-config` folders + field + CI, CODEOWNERS, Kyverno reality gates, metadata spine, DNS/edge, ESO, external-dns, Gateway | Repo boundaries can carry the approval model | C-08 (carried), C-09..C-14, C-24 | Next |
 | M4 | Factory slice | One change class (dependency bump) end-to-end: done-criteria, approval packet, agent-authored PRs, scorecard, L1→L2 promotion | The autonomy ladder works — the claim nobody has published a working example of | C-15..C-22, C-25 | Planned |
 
 The M1 numbers, for the impatient: three scripted teardown/rebuild cycles;
@@ -113,8 +118,11 @@ collect — 22 claims on 2026-07-31; three added since, each dated. A claim
 leaves UNTESTED only via a build-log entry with evidence: **HELD**,
 **ADJUSTED** (with a superseding ADR), or **WRONG** (with an ADR, published,
 not buried). Milestones are vertical slices; each grades its claims before the
-next begins. Scaffolds above are scaffolds because their milestone hasn't
-started — not because the work stalled.
+next begins. Some tests' pass criteria were operationalised in a dated
+readiness walk at the start of the milestone (the M2 log records which, and
+when); the register itself was not reworded. Scaffolds above are scaffolds
+because their milestone hasn't started — except `template-service`, which M2
+scoped out and says so — not because the work stalled.
 
 ## Using this as a template for your own factory
 
@@ -150,7 +158,7 @@ client or employer code, config, or data. Pattern only.
 Each milestone close is released and archived by Zenodo under the concept DOI
 above (version DOIs per release; `m2-close` is the first), and the org repos
 are tagged to match and archived by
-[Software Heritage](https://archive.softwareheritage.org/). Every repo carries
-a `CITATION.cff`.
+[Software Heritage](https://archive.softwareheritage.org/). The design seed
+and the built repos carry a `CITATION.cff`.
 
 Apache-2.0 throughout. Copyright thecloudgeek LLC.
