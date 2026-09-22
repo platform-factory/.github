@@ -150,10 +150,9 @@ To stand up your own:
 
 ## Provenance, citation, license
 
-These are patterns designed and run in production at fintech scale —
-multi-year GKE operation, PR-gated system provisioning, one-repo-per-service
-GitOps, a curated knowledge layer — rebuilt here from scratch and generic: no
-client or employer code, config, or data. Pattern only.
+Written from scratch and generic: no client or employer code, config, or data,
+and not built for any one industry. Any business that ships software can use
+the pattern.
 
 Each milestone close is released and archived by Zenodo under the concept DOI
 above (version DOIs per release; `m2-close` is the first), and the org repos
