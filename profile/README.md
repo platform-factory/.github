@@ -15,25 +15,26 @@ Designed and written by **Ronak Patel**
 thecloudgeek LLC). Cite it by DOI:
 [10.5281/zenodo.22848132](https://doi.org/10.5281/zenodo.22848132).
 
-> **Where the build is (2026-09-23):** M1 *Spine* closed 2026-08-28 and M2
+> **Where the build is (2026-09-27):** M1 *Spine* closed 2026-08-28 and M2
 > *Paved road* closed 2026-09-17, claims graded with evidence in the build
 > log. M2b *Engine swap* is next: its design
 > ([ADR-0017](https://github.com/platform-factory/platform-factory-concept/blob/main/docs/adr/0017-config-connector-engine-platform-rendered-forms.md),
-> [ADR-0018](https://github.com/platform-factory/platform-factory-concept/blob/main/docs/adr/0018-engine-permissions-are-a-list-in-platform-roles.md))
-> and seven claims were registered before any build command, and none of it
-> is built yet. Of 32 registered claims — 22 pre-registered on 2026-07-31,
-> ten added since, each dated — eight carry a grade: five HELD (three of them
+> [ADR-0018](https://github.com/platform-factory/platform-factory-concept/blob/main/docs/adr/0018-engine-permissions-are-a-list-in-platform-roles.md),
+> [ADR-0019](https://github.com/platform-factory/platform-factory-concept/blob/main/docs/adr/0019-a-file-change-deletes-no-tenant-by-itself.md))
+> and eight claims were registered before any build command; its first build
+> step, the `systems` repo's check, merged on 2026-09-27. Of 33 registered
+> claims — 22 pre-registered on 2026-07-31, eleven added since, each dated — eight carry a grade: five HELD (three of them
 > scoped: C-03 and C-04 to the surface built so far, C-02 to the spend data
 > that exists), three ADJUSTED (design changed; superseding ADR linked), none
-> WRONG. The other twenty-four are untested, including one M2 stretch claim
-> (C-08) that was not attempted and the seven M2b claims. Nothing here is
+> WRONG. The other twenty-five are untested, including one M2 stretch claim
+> (C-08) that was not attempted and the eight M2b claims. Nothing here is
 > abandoned; some of it is not yet started, on purpose.
 
 ## Start here
 
 1. **Why — the design seed:**
    [`platform-factory-concept`](https://github.com/platform-factory/platform-factory-concept).
-   The pattern in five sentences, eighteen ADRs, the research digests, and the
+   The pattern in five sentences, nineteen ADRs, the research digests, and the
    [claims register](https://github.com/platform-factory/platform-factory-concept/blob/main/docs/build-log/claims-register.md)
    every milestone is graded against. Read that README first; it is the spec
    this org implements.
@@ -85,12 +86,12 @@ approval model lives in *which repo a change touches* — plus the design seed
 and a second tenant added at M2 so the one-file onboarding test had something
 to onboard.
 
-| Repo | Role | Approver | Milestone | Status (2026-09-23) |
+| Repo | Role | Approver | Milestone | Status (2026-09-27) |
 |---|---|---|---|---|
-| [`platform-factory-concept`](https://github.com/platform-factory/platform-factory-concept) | Design seed: pattern docs, 18 ADRs, claims register, graded build logs, research | — | all | **Current through M2b's design** (ADR-0017 and ADR-0018, merged 2026-09-23). Moved into the org from `thecloudgeek/platform-factory` on 2026-09-19 with its dated history. |
+| [`platform-factory-concept`](https://github.com/platform-factory/platform-factory-concept) | Design seed: pattern docs, 19 ADRs, claims register, graded build logs, research | — | all | **Current through M2b's design** (ADR-0017 and ADR-0018, merged 2026-09-23; ADR-0019, merged 2026-09-27). Moved into the org from `thecloudgeek/platform-factory` on 2026-09-19 with its dated history. |
 | [`platform-bootstrap`](https://github.com/platform-factory/platform-bootstrap) | Terraform layer 0: project, VPC, GKE, workload identity, Argo CD — "Terraform's last job" | platform | **M1** | **Built and live.** Layers 0–1 running since 2026-08-06; layers 2–3 rebuilt between sessions by `cycle.sh`, six cycles so far (five measured rebuilds and a closing teardown). Timings in `scripts/cycle-results.tsv`. |
 | [`platform-config`](https://github.com/platform-factory/platform-config) | Argo CD root (app-of-apps): the shared platform layer | platform | **M1–M2** → M3 | **Built:** Crossplane + GCP provider family, Kyverno, the `System` and database XRDs/Compositions, images through Artifact Registry. ESO, external-dns, Gateway arrive in M3. |
-| [`systems`](https://github.com/platform-factory/systems) | One YAML per tenant — the `System` XR | platform | **M2** | **Built.** Two tenants live (`svc-hello`, `svc-ledger`); merging the file *is* onboarding (C-05 HELD). |
+| [`systems`](https://github.com/platform-factory/systems) | One YAML per tenant — the `System` XR | platform | **M2** | **Built.** Two tenants live (`svc-hello`, `svc-ledger`); merging the file *is* onboarding (C-05 HELD). Since 2026-09-27 it also holds the retired-name list and its first PR check (M2b). |
 | [`svc-hello`](https://github.com/platform-factory/svc-hello) | Canonical service: Go app + `k8s/` (Deployment + database claim) | the team | **M2** | **Built.** Three routes, one table, Cloud SQL via IAM identity — the application holds no password (ADR-0013). One manual `sql.User` step per database remains while a provider fix is pending (C-07 ADJUSTED, ADR-0016 §4). |
 | [`svc-ledger`](https://github.com/platform-factory/svc-ledger) | Second tenant, a placeholder owned by a different team | the team | **M2** | **Built** — exists so C-05/C-06 had a second team to test against. |
 | [`template-service`](https://github.com/platform-factory/template-service) | Create-repo-from-template golden path | platform | M2 → later | Scaffold. M2 did not build it; recorded as such. |
@@ -103,7 +104,7 @@ to onboard.
 |---|---|---|---|---|---|
 | M1 | Spine | Org repos, `platform-bootstrap`, GKE, Argo CD app-of-apps from `platform-config` | Terraform's-last-job + GitOps control plane; rebuild is cheap | C-01..C-04, C-23 | **Closed 2026-08-28.** C-23 HELD; C-02 HELD on tear-down and rebuild times and manual steps (its spend data exists only from 2026-08-27); C-04 HELD for the M1 surface, at the cost of five sync-wave workarounds; C-01, C-03 deferred to M2 (their tests couldn't run yet — recorded as a register scheduling error, not papered over). |
 | M2 | Paved road | `System` XR, `svc-hello` + database claim, Compositions + Kyverno guardrails, second tenant | Declare intent in your own repo → infrastructure materializes; policy replaces review | C-05..C-08 | **Closed 2026-09-17.** C-05 HELD; C-03 HELD for the kinds composed (seven created, one create-path gap; two kinds it names were never created by hand); C-01, C-06, C-07 ADJUSTED ([ADR-0016](https://github.com/platform-factory/platform-factory-concept/blob/main/docs/adr/0016-what-the-m2-build-changed.md)); C-08 (stretch) not attempted, deferred to M3. Two claims added, dated (C-24, C-25). |
-| M2b | Engine swap | Config Connector in place of Crossplane; `system` and `claims` Helm charts rendered by platform-owned Applications; the cutover as a rebuild; `platform-roles`, the engine's permissions as four custom roles | The paved road's results hold on a smaller engine; what the engine's roles leave out is a deletion lock Google enforces; a rebuild's cost is measured, not estimated | C-26..C-32 | **Next.** Decided in ADR-0017 and ADR-0018; seven claims registered before any build command; nothing built yet. |
+| M2b | Engine swap | Config Connector in place of Crossplane; `system` and `claims` Helm charts rendered by platform-owned Applications; the cutover as a rebuild; `platform-roles`, the engine's permissions as four custom roles | The paved road's results hold on a smaller engine; what the engine's roles leave out is a deletion lock Google enforces; a rebuild's cost is measured, not estimated; a removed, renamed or broken file deletes no tenant by itself | C-26..C-33 | **In progress.** Decided in ADR-0017, ADR-0018 and ADR-0019; eight claims registered before any build command; the first build step (the `systems` check) merged 2026-09-27. |
 | M3 | Approval boundary | `edge-config` folders + field + CI, CODEOWNERS, Kyverno reality gates, metadata spine, DNS/edge, ESO, external-dns, Gateway | Repo boundaries can carry the approval model | C-09..C-14, C-24 | After M2b |
 | M4 | Factory slice | One change class (dependency bump) end-to-end: done-criteria, approval packet, agent-authored PRs, scorecard, L1→L2 promotion | The autonomy ladder works: a change class earns merge rights from its own track record and loses them automatically when a merged change turns out wrong | C-15..C-22, C-25 | Planned |
 
@@ -125,7 +126,7 @@ The build is a **pre-registered experiment**
 ([ADR-0008](https://github.com/platform-factory/platform-factory-concept/blob/main/docs/adr/0008-build-phase-is-a-preregistered-experiment.md)).
 Before the first build command, every falsifiable claim in the design docs was
 written into an append-only claims register with its test and the data to
-collect — 22 claims on 2026-07-31; ten added since, each dated. A claim
+collect — 22 claims on 2026-07-31; eleven added since, each dated. A claim
 leaves UNTESTED only via a build-log entry with evidence: **HELD**,
 **ADJUSTED** (with a superseding ADR), or **WRONG** (with an ADR, published,
 not buried). Milestones are vertical slices; each grades its claims before the
