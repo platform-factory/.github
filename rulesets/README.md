@@ -16,3 +16,4 @@ Files are named `<UTC time>-<step>-<before|after|history>-<change>.json`.
 |---|---|---|
 | 01 → 02 | C-09: required reviewers, team `security`, one approval, `external/**` | 45124681 → 55281350 |
 | 03 → 04 | C-10: `route files` (GitHub Actions) becomes a required status check, after it failed on #10–#17 and passed on #6–#9 | 55281350 → 55281693 |
+| 05 → 06 → 08 | C-13's flip, 2026-11-03: the `security` approval for `external/**` lifted at 19:10:50Z so edge-config#7 could merge without `--admin` (merged 19:10:58Z, `b1c3f99`), and restored at 19:11:00Z; 08 equals 05. One person cannot give the approval (C-09) | 55281693 → 56118778 → 56118811 |
